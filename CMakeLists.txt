@@ -7,7 +7,23 @@ add_definitions(-std=c++11)
 set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
-set(sources src/particle_filter.cpp src/main.cpp)
+set(sources
+    src/Landmark.cpp
+    src/LandmarkAssociation.cpp
+    src/LandmarkMap.hpp
+    src/Landmarks.hpp
+    src/MeanParticle.cpp
+    src/MotionModel.cpp
+    src/Observations.hpp
+    src/Particle.cpp
+    src/ParticleFilter.cpp
+    src/ParticleStorage.hpp
+    src/StandardDeviationPosition.cpp
+    src/StandardDeviationLandmark.cpp
+    src/helper_functions.h
+    src/json.hpp
+    src/main.cpp
+    )
 
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
@@ -22,7 +38,8 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 
 add_executable(particle_filter ${sources})
+find_library(WS_LIB uWS HINTS ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
-
-target_link_libraries(particle_filter z ssl uv uWS)
+target_link_libraries(particle_filter z ssl uv "${WS_LIB}")
+target_include_directories(particle_filter PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
