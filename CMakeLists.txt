@@ -8,6 +8,8 @@ set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
 set(sources
+    src/Coordinate2D.hpp
+    src/FixedSizeVector.hpp
     src/Landmark.cpp
     src/LandmarkAssociation.cpp
     src/LandmarkMap.hpp
@@ -17,7 +19,6 @@ set(sources
     src/Observations.hpp
     src/Particle.cpp
     src/ParticleFilter.cpp
-    src/ParticleStorage.hpp
     src/StandardDeviationPosition.cpp
     src/StandardDeviationLandmark.cpp
     src/helper_functions.h

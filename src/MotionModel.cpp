@@ -9,8 +9,7 @@
 #include "MotionModel.hpp"
 #include "Particle.hpp"
 
-
-MotionModel::MotionModel(const double deltaTinS, const double velocity, const double yawRate, const StandardDeviation & std)
+MotionModel::MotionModel(const double deltaTinS, const double velocity, const double yawRate, const StandardDeviationPosition & std)
    : m_deltaTinS(deltaTinS)
    , m_velocity(velocity)
    , m_yawRate(yawRate)

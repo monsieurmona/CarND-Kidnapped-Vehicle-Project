@@ -9,9 +9,10 @@
 // local include
 #include "Landmarks.hpp"
 
-class LandmarkMap : public Landmarks<1000>
+class LandmarkMap : public Landmarks<10000>
 {
 public:
+   using LandmarksInView = Landmarks<200>;
    using UniquePtr = std::unique_ptr<LandmarkMap>;
 
    /* Reads map data from a file.
@@ -45,6 +46,27 @@ public:
          }
       }
       return true;
+   }
+
+   inline void getLandmarksInView(const Particle & position, const double range_m, LandmarksInView & landmarksInView) const
+   {
+      landmarksInView.clear();
+
+      // a tile based approach would be benifitial here, but for simplicity
+      // we run over all landmarks here
+      for (const Landmark & landmark : *this)
+      {
+         const double distance = landmark.euclideanDistance(position);
+
+         if (distance <= range_m)
+         {
+            if (!landmarksInView.push_back(landmark))
+            {
+               std::cerr << "LandmarkMap::getLandmarksInView unable to insert more landmarks to view" << std::endl;
+               break;
+            }
+         }
+      }
    }
 };
 

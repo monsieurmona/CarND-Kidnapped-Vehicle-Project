@@ -5,6 +5,7 @@
  *      Author: Tiffany Huang
  */
 
+
 #ifndef HELPER_FUNCTIONS_H_
 #define HELPER_FUNCTIONS_H_
 
@@ -151,6 +152,7 @@ inline bool read_gt_data(std::string filename, std::vector<ground_truth>& gt) {
  * @param filename Name of file containing landmark observation measurements.
  * @output True if opening and reading file was successful
  */
+/*
 inline bool read_landmark_data(std::string filename, std::vector<LandmarkObs>& observations) {
 
 	// Get file of landmark measurements:
@@ -187,5 +189,6 @@ inline bool read_landmark_data(std::string filename, std::vector<LandmarkObs>& o
 	}
 	return true;
 }
+*/
 
 #endif /* HELPER_FUNCTIONS_H_ */

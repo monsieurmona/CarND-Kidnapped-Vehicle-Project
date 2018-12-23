@@ -8,6 +8,7 @@
 // local includes
 #include "StandardDeviationPosition.hpp"
 
+// forward declaration
 class Particle;
 
 class MotionModel

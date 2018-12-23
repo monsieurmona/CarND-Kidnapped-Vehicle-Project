@@ -9,10 +9,11 @@
 #include <memory>
 
 // local includes
+#include "FixedSizeVector.hpp"
 #include "Landmarks.hpp"
+#include "LandmarkAssociation.hpp"
 #include "MotionModel.hpp"
 #include "Particle.hpp"
-#include "ParticleStorage.hpp"
 
 // forward declaration
 class LandmarkMap;
@@ -26,13 +27,33 @@ class StandardDeviationPosition;
 class ParticleFilter
 {
 public:
-   using X = std::unique_ptr<ParticleFilter>;
+   static constexpr int nParticles = 3;
+   using ParticleStorage = FixedSizeVector<Particle, nParticles>;
 
    struct BestParticle
    {
       BestParticle() : m_ptr(nullptr), m_totalWeight(0.0) {}
       const Particle * m_ptr;
       double m_totalWeight;
+   };
+
+   template<typename TRandomValue, typename TDistribution>
+   class RandomGenerator
+   {
+   public:
+      using Type = TRandomValue;
+
+      RandomGenerator(TRandomValue start, TRandomValue end)
+         : gen(std::random_device()())
+         , distribution(start, end)
+      {
+      }
+
+      Type operator()() { return distribution(gen); }
+
+   private:
+      std::mt19937 gen;
+      TDistribution distribution;
    };
 
    /**
@@ -50,11 +71,12 @@ public:
    /**
     * @brief Updates the weights for each particle based on the likelihood of the observed measurements.
     * @param sensorRange Range [m] of sensor
+    * @param carPosition postion of the car
     * @param landmarkStd Landmark measurement uncertainty [x [m], y [m]]
     * @param observations landmark observations
     * @param landmarkMap contains map landmarks
     */
-   void updateWeights(const double sensorRange, const StandardDeviationLandmark & landmarkStd, const Observations & observations, const LandmarkMap & landmarkMap);
+   void updateWeights(const double sensorRange, const MeanParticle & carPosition, const StandardDeviationLandmark & landmarkStd, const Observations & observations, const LandmarkMap & landmarkMap);
 
    /**
     * resample Resamples from the updated set of particles to form
@@ -83,10 +105,14 @@ public:
     * @brief get the amount of stored particles
     * @return amount of particles
     */
-   inline size_t getAmount() const { return m_particles.getAmount(); }
+   inline size_t getAmount() const { return m_particles.length(); }
 
 private:
-   ParticleStorage<3> m_particles; ///< all particles
+   double getMaxWeight() const;
+
+
+   ParticleStorage m_particles; ///< all particles
+   LandmarkAssociation m_landmarkAssociation;
    bool m_isInitialized = false;
 };
 

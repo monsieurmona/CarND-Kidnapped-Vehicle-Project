@@ -19,6 +19,7 @@ public:
    MeanParticle(const Particle & particle, const StandardDeviationPosition & std);
    inline Particle sampleParticle() { return Particle(getNdX(), getNdY(), getNdHeading()); }
    inline Particle operator()() { return sampleParticle(); }
+   inline const Particle getPosition() const { return m_position; }
 
 private:
    using NormDist = std::normal_distribution<double>;
