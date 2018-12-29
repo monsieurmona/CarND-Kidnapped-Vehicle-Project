@@ -50,7 +50,7 @@ int main()
    // create the landmark map on heap
    LandmarkMap::UniquePtr landmarkMapPtr = LandmarkMap::UniquePtr(new LandmarkMap());
 
-   if (!landmarkMapPtr->read_map_data("../data/map_data.txt")) {
+   if (!landmarkMapPtr->read_map_data("./data/map_data.txt")) {
       std::cout << "Error: Could not open map file" << std::endl;
       return -1;
    }
@@ -84,7 +84,6 @@ int main()
                MeanParticle meanParticle(Particle(sense_x, sense_y, sense_theta), sigma_pos);
 
                if (!pf->isInitialized()) {
-
                   pf->init(meanParticle);
                }
                else {
@@ -104,7 +103,7 @@ int main()
                noisy_observations.receive(sense_observations_x, sense_observations_y);
 
                // Update the weights and resample
-               pf->updateWeights(sensor_range, meanParticle, sigma_landmark, noisy_observations, *landmarkMapPtr);
+               pf->updateWeights(sensor_range, sigma_landmark, noisy_observations, *landmarkMapPtr);
                pf->resample();
 
                size_t num_particles = pf->getAmount();

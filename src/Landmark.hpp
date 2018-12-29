@@ -86,7 +86,7 @@ public:
     * @brief provides the coordinate of the landmark
     * @return landmark coordinates
     */
-   inline Coordinate2D operator()() const { return Coordinate2D(m_x, m_y); }
+   inline Coordinate2D getCoord2d() const { return Coordinate2D(m_x, m_y); }
 
 private:
    int m_id;			// Id of matching landmark in the map.

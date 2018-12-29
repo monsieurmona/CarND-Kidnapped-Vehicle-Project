@@ -48,12 +48,12 @@ void ParticleFilter::print()
 }
 
 
-void ParticleFilter::updateWeights(const double sensorRange, const MeanParticle & carPosition, const StandardDeviationLandmark & landmarkStd, const Observations & observations, const LandmarkMap & landmarkMap)
+void ParticleFilter::updateWeights(const double sensorRange, const StandardDeviationLandmark & landmarkStd, const Observations & observations, const LandmarkMap & landmarkMap)
 {
    for (Particle & predictedCarPosition : m_particles)
    {
       m_landmarkAssociation.associate(sensorRange, predictedCarPosition, observations, landmarkMap);
-      predictedCarPosition.m_weight = m_landmarkAssociation.getWeight(carPosition, predictedCarPosition, landmarkStd);
+      predictedCarPosition.m_weight = m_landmarkAssociation.getWeight(landmarkStd);
    }
 }
 
@@ -79,9 +79,6 @@ void ParticleFilter::resample()
 {
    ParticleStorage newParticles;
    using ParticleIndex = size_t;
-   using ParticlesUsed = FixedSizeVector<bool, nParticles>;
-   ParticlesUsed particlesUsed;
-   particlesUsed.fill(false);
 
    const double maxWeight = getMaxWeight();
 
@@ -95,29 +92,25 @@ void ParticleFilter::resample()
    double beta = 0.0;
    const size_t N = m_particles.length();
 
-   for (ParticleIndex particleIdx = 0; particleIdx < N; particleIdx++)
+   for (ParticleIndex counter = 0; counter < N; counter++)
    {
       beta += randomBetaGenerator();
-      const Particle & particle = m_particles[particleIdx];
 
-      while(beta > particle.m_weight)
+      while(beta > m_particles[selectIdx].m_weight)
       {
-         beta -= particle.m_weight;
+         beta -= m_particles[selectIdx].m_weight;
          selectIdx = (selectIdx + 1) % N;
       }
 
-      if (false == particlesUsed[selectIdx])
-      {
-         // if we don't have the particle already,
-         // we insert the new particle into the new set
-         const Particle & newParticle = m_particles[selectIdx];
-         newParticles.push_back(newParticle);
-         particlesUsed[selectIdx] = true;
-      }
+      // if we don't have the particle already,
+      // we insert the new particle into the new set
+      const Particle & newParticle = m_particles[selectIdx];
+      newParticles.push_back(newParticle);
    }
 
    m_particles = newParticles;
 }
+
 
 void ParticleFilter::getAssociationsString(
       const double sensorRange,

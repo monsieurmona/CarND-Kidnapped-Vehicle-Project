@@ -41,7 +41,7 @@ public:
     * @param stdLandmark standard deviation of an observation
     * @return new weight
     */
-   double getWeight(const MeanParticle & carPosition, const Particle & predictedCarPosition, const StandardDeviationLandmark & stdLandmark);
+   double getWeight(const StandardDeviationLandmark & stdLandmark);
 
    /**
     * @brief provides associated landmark ids

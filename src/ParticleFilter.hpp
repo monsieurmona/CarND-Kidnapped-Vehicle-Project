@@ -27,7 +27,7 @@ class StandardDeviationPosition;
 class ParticleFilter
 {
 public:
-   static constexpr int nParticles = 3;
+   static constexpr int nParticles = 100;
    using ParticleStorage = FixedSizeVector<Particle, nParticles>;
 
    struct BestParticle
@@ -76,7 +76,7 @@ public:
     * @param observations landmark observations
     * @param landmarkMap contains map landmarks
     */
-   void updateWeights(const double sensorRange, const MeanParticle & carPosition, const StandardDeviationLandmark & landmarkStd, const Observations & observations, const LandmarkMap & landmarkMap);
+   void updateWeights(const double sensorRange, const StandardDeviationLandmark & landmarkStd, const Observations & observations, const LandmarkMap & landmarkMap);
 
    /**
     * resample Resamples from the updated set of particles to form

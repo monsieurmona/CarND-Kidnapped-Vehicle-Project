@@ -51,7 +51,7 @@ void LandmarkAssociation::associate(const double sensorRange, const Particle & p
    }
 }
 
-double LandmarkAssociation::getWeight(const MeanParticle & carPosition, const Particle & predictedCarPosition, const StandardDeviationLandmark & stdLandmark)
+double LandmarkAssociation::getWeight(const StandardDeviationLandmark & stdLandmark)
 {
    double prob = 1.0;
 
@@ -62,10 +62,7 @@ double LandmarkAssociation::getWeight(const MeanParticle & carPosition, const Pa
 
       if (landmark != nullptr)
       {
-         const Coordinate2D distanceToObservation = observation - carPosition.getPosition();
-         const Coordinate2D distanceToLandmark = *landmark - predictedCarPosition;
-
-         prob *= stdLandmark.gaussian(distanceToLandmark, distanceToObservation);
+         prob *= stdLandmark.gaussian(landmark->getCoord2d(), observation.getCoord2d());
       }
    }
 
@@ -104,7 +101,7 @@ bool LandmarkAssociation::getObservationWorldCoordinates(ObservationWorldCoordin
 
       if (landmark != nullptr)
       {
-         const Coordinate2D coordinates = observation();
+         const Coordinate2D coordinates = observation.getCoord2d();
          if (!observationWorldCoordinates.push_back(coordinates))
          {
             return false;
