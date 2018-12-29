@@ -76,6 +76,18 @@ public:
       m_y = y_p + sin_theta * m_x + cos_theta * m_y;
    }
 
+   /**
+    * @brief provides the id of the landmark
+    * @return landmark id
+    */
+   inline int getId() const { return m_id; }
+
+   /**
+    * @brief provides the coordinate of the landmark
+    * @return landmark coordinates
+    */
+   inline Coordinate2D operator()() const { return Coordinate2D(m_x, m_y); }
+
 private:
    int m_id;			// Id of matching landmark in the map.
    double m_x;			// Local (vehicle coordinates) x position of landmark observation [m]

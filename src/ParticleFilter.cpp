@@ -25,7 +25,7 @@ void ParticleFilter::init(MeanParticle & meanParticle)
    m_isInitialized = true;
 }
 
-void ParticleFilter::predict(const MotionModel & motionModel)
+void ParticleFilter::predict(MotionModel & motionModel)
 {
    for (Particle & particle : m_particles)
    {
@@ -79,26 +79,9 @@ void ParticleFilter::resample()
 {
    ParticleStorage newParticles;
    using ParticleIndex = size_t;
-   using ParticleIndexes = FixedSizeVector<ParticleIndex, nParticles>;
-   ParticleIndexes particleIndexes;
-
-   // comparators for the insert function, to avoid duplicates
-   // this class is defined here, as this is only needed in this scope
-   class ComparePred
-   {
-   public:
-      class LesserThan
-      {
-      public:
-         bool operator()(const ParticleIndex & lhs, const ParticleIndex & rhs) const {return lhs < rhs;}
-      };
-
-      class Equal
-      {
-      public:
-         bool operator()(const ParticleIndex & lhs, const ParticleIndex & rhs) const {return lhs == rhs;}
-      };
-   };
+   using ParticlesUsed = FixedSizeVector<bool, nParticles>;
+   ParticlesUsed particlesUsed;
+   particlesUsed.fill(false);
 
    const double maxWeight = getMaxWeight();
 
@@ -123,16 +106,67 @@ void ParticleFilter::resample()
          selectIdx = (selectIdx + 1) % N;
       }
 
-      if (particleIndexes.insert<ComparePred>(selectIdx))
+      if (false == particlesUsed[selectIdx])
       {
          // if we don't have the particle already,
          // we insert the new particle into the new set
          const Particle & newParticle = m_particles[selectIdx];
          newParticles.push_back(newParticle);
+         particlesUsed[selectIdx] = true;
       }
    }
 
    m_particles = newParticles;
+}
+
+void ParticleFilter::getAssociationsString(
+      const double sensorRange,
+      const Particle & particle,
+      const Observations & observations,
+      const LandmarkMap & landmarkMap,
+      std::string & landmarkIdsStr,
+      std::string & xCoordinatesStr,
+      std::string & yCoordinatesStr)
+{
+   m_landmarkAssociation.associate(sensorRange, particle, observations, landmarkMap);
+   LandmarkAssociation::LandmarkIds landmarkIds;
+   LandmarkAssociation::ObservationWorldCoordinates observationWorldCoordinates;
+   m_landmarkAssociation.getLandmarkIds(landmarkIds);
+   m_landmarkAssociation.getObservationWorldCoordinates(observationWorldCoordinates);
+
+   std::stringstream idSs;
+   std::stringstream xSs;
+   std::stringstream ySs;
+
+   std::copy( landmarkIds.begin(), landmarkIds.end(), std::ostream_iterator<int>(idSs, " "));
+   landmarkIdsStr = idSs.str();
+
+   if (landmarkIdsStr.length() > 0)
+   {
+      landmarkIdsStr = landmarkIdsStr.substr(
+               0, landmarkIdsStr.length()-1);  // get rid of the trailing space
+   }
+
+   for (const auto & coordinate : observationWorldCoordinates)
+   {
+      xSs << coordinate.m_x << " ";
+      ySs << coordinate.m_y << " ";
+   }
+
+   xCoordinatesStr = xSs.str();
+   yCoordinatesStr = ySs.str();
+
+   if (xCoordinatesStr.length() > 0)
+   {
+      xCoordinatesStr = xCoordinatesStr.substr(
+               0, xCoordinatesStr.length()-1);  // get rid of the trailing space
+   }
+
+   if (yCoordinatesStr.length() > 0)
+   {
+      yCoordinatesStr = yCoordinatesStr.substr(
+               0, yCoordinatesStr.length()-1);  // get rid of the trailing space
+   }
 }
 
 double ParticleFilter::getMaxWeight() const

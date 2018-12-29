@@ -7,6 +7,7 @@
 
 struct Coordinate2D
 {
+   Coordinate2D() { /* not initialized on purpose */ }
    Coordinate2D(const double x, const double y) : m_x(x), m_y(y) {}
    double m_x;
    double m_y;

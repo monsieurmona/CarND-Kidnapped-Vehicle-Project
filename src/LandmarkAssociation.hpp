@@ -20,6 +20,8 @@ public:
    using Observation = Landmark;
 
    // a association consits of a transformed observation (map coordinates) and a pointer to a landmark if available
+   using LandmarkIds = FixedSizeVector<int, ObservationDefines::m_nMaxObservations>;
+   using ObservationWorldCoordinates = FixedSizeVector<Coordinate2D, ObservationDefines::m_nMaxObservations>;
    using AssociationPair = std::pair<Observation, const Landmark *>;
    using Associations = FixedSizeVector<AssociationPair, ObservationDefines::m_nMaxObservations>;
 
@@ -40,6 +42,21 @@ public:
     * @return new weight
     */
    double getWeight(const MeanParticle & carPosition, const Particle & predictedCarPosition, const StandardDeviationLandmark & stdLandmark);
+
+   /**
+    * @brief provides associated landmark ids
+    * @param landmakIds
+    * @return true : successful
+    */
+   bool getLandmarkIds(LandmarkIds & landmakIds) const;
+
+   /**
+    * @brief provides provides the world coordinates of observations that were associated to landmarks
+    * @param observationWorldCoordinates world coordinates of observations
+    * @return true : successful
+    */
+   bool getObservationWorldCoordinates(ObservationWorldCoordinates & observationWorldCoordinates) const;
+
 private:
    Associations m_assocations;
 };

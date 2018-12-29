@@ -77,14 +77,15 @@ int main()
             if (event == "telemetry") {
                // j[1] is the data JSON object
 
+               // Sense noisy position data from the simulator
+               double sense_x = std::stod(j[1]["sense_x"].get<std::string>());
+               double sense_y = std::stod(j[1]["sense_y"].get<std::string>());
+               double sense_theta = std::stod(j[1]["sense_theta"].get<std::string>());
+               MeanParticle meanParticle(Particle(sense_x, sense_y, sense_theta), sigma_pos);
+
                if (!pf->isInitialized()) {
 
-                  // Sense noisy position data from the simulator
-                  double sense_x = std::stod(j[1]["sense_x"].get<std::string>());
-                  double sense_y = std::stod(j[1]["sense_y"].get<std::string>());
-                  double sense_theta = std::stod(j[1]["sense_theta"].get<std::string>());
-                  MeanParticle initParticle(Particle(sense_x, sense_y, sense_theta), sigma_pos);
-                  pf->init(initParticle);
+                  pf->init(meanParticle);
                }
                else {
                   // Predict the vehicle's next state from previous (noiseless control) data.
@@ -103,7 +104,7 @@ int main()
                noisy_observations.receive(sense_observations_x, sense_observations_y);
 
                // Update the weights and resample
-               pf->updateWeights(sensor_range, sigma_landmark, noisy_observations, *landmarkMapPtr);
+               pf->updateWeights(sensor_range, meanParticle, sigma_landmark, noisy_observations, *landmarkMapPtr);
                pf->resample();
 
                size_t num_particles = pf->getAmount();
@@ -120,9 +121,21 @@ int main()
                msgJson["best_particle_theta"] = best_particle.m_ptr->m_heading;
 
                //Optional message data used for debugging particle's sensing and associations
-               msgJson["best_particle_associations"] = pf.getAssociations(best_particle);
-               msgJson["best_particle_sense_x"] = pf.getSenseX(best_particle);
-               msgJson["best_particle_sense_y"] = pf.getSenseY(best_particle);
+               std::string associatedLandmarkIds;
+               std::string associatedObeservationXCoordinates;
+               std::string associatedObeservationYCoordinates;
+               pf->getAssociationsString(
+                        sensor_range,
+                        *best_particle.m_ptr,
+                        noisy_observations,
+                        *landmarkMapPtr,
+                        associatedLandmarkIds,
+                        associatedObeservationXCoordinates,
+                        associatedObeservationYCoordinates
+                        );
+               msgJson["best_particle_associations"] = associatedLandmarkIds;
+               msgJson["best_particle_sense_x"] = associatedObeservationXCoordinates;
+               msgJson["best_particle_sense_y"] = associatedObeservationYCoordinates;
 
                auto msg = "42[\"best_particle\"," + msgJson.dump() + "]";
                // std::cout << msg << std::endl;

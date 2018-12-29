@@ -66,7 +66,7 @@ public:
     * @brief predicts the state of all particles for the next time
     * @param motionModel defines how the object moves
     */
-   void predict(const MotionModel & motionModel);
+   void predict(MotionModel & motionModel);
 
    /**
     * @brief Updates the weights for each particle based on the likelihood of the observed measurements.
@@ -107,9 +107,32 @@ public:
     */
    inline size_t getAmount() const { return m_particles.length(); }
 
-private:
-   double getMaxWeight() const;
+   /**
+    * @brief Provides associations as string for DEBUGGING purposes
+    * @param sensorRange view range
+    * @param particle view of observations
+    * @param observations observations from particle view
+    * @param landmarkMap all landmarks in a map
+    * @param landmarkIds associated landmark ids
+    * @param xCoordinates x world coordinates of associated observations
+    * @param yCoordinates y world coordinates of associated observations
+    * @warning this uses string/stream and therefor dynamic allocated memory
+    */
+   void getAssociationsString(
+         const double sensorRange,
+         const Particle & particle,
+         const Observations & observations,
+         const LandmarkMap & landmarkMap,
+         std::string & landmarkIds,
+         std::string & xCoordinates,
+         std::string & yCoordinates);
 
+private:
+   /**
+    * @brief the maximum weight of all particles
+    * @return the maximum weight of all particles
+    */
+   double getMaxWeight() const;
 
    ParticleStorage m_particles; ///< all particles
    LandmarkAssociation m_landmarkAssociation;

@@ -133,6 +133,16 @@ public:
    }
 
    /**
+    * @brief fills the array with elements
+    * @param element
+    */
+   inline void fill(const ElementType & element)
+   {
+      m_array.fill(element);
+      occupy();
+   }
+
+   /**
     * @brief amount of landmarks stored
     * @return
     */
@@ -144,6 +154,13 @@ public:
     * @return element
     */
    inline const ElementType & operator[](size_t idx) const { return m_array[idx]; }
+
+   /**
+    * @brief provides an elment from the array
+    * @param idx index to the element
+    * @return element
+    */
+   inline ElementType & operator[](size_t idx) { return m_array[idx]; }
 
 private:
    Type m_array;

@@ -17,7 +17,7 @@ MotionModel::MotionModel(const double deltaTinS, const double velocity, const do
 {
 }
 
-Particle MotionModel::operator()(const Particle & particle) const
+Particle MotionModel::operator()(const Particle & particle)
 {
    Particle movedParticle;
 
@@ -35,17 +35,17 @@ Particle MotionModel::operator()(const Particle & particle) const
       // if yaw rate is not zero
       const double yr_dt = yr * dt;
       const double v_by_yr = v / yr;
-      const double x1 = x0 + v_by_yr * (sin(thetha0 + yr_dt) - sin(thetha0));
-      const double y1 = y0 + v_by_yr * (cos(thetha0) - cos(thetha0 + yr_dt));
-      const double thetha1 = thetha0 + yr_dt;
+      const double x1 = x0 + v_by_yr * (sin(thetha0 + yr_dt) - sin(thetha0)) + m_std.getXNoise();
+      const double y1 = y0 + v_by_yr * (cos(thetha0) - cos(thetha0 + yr_dt)) + m_std.getYNoise();
+      const double thetha1 = thetha0 + yr_dt + m_std.getHeadingNoise();
       movedParticle.set(x1, y1, thetha1, weight);
    }
    else
    {
       // if yaw rate is zero
-      const double x1 = x0 + v * cos(thetha0) * dt;
-      const double y1 = y0 + v * sin(thetha0) * dt;
-      const double thetha1 = thetha0;
+      const double x1 = x0 + v * cos(thetha0) * dt + m_std.getXNoise();
+      const double y1 = y0 + v * sin(thetha0) * dt + m_std.getYNoise();
+      const double thetha1 = thetha0 + m_std.getHeadingNoise();
       movedParticle.set(x1, y1, thetha1, weight);
    }
 

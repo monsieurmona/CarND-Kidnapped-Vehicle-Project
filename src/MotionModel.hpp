@@ -21,7 +21,7 @@ public:
     * @param particle input particle
     * @return moved particle bases on the motion model
     */
-   Particle operator()(const Particle & particle) const;
+   Particle operator()(const Particle & particle);
 
 private:
    double m_deltaTinS;      ///< delta time in seconds

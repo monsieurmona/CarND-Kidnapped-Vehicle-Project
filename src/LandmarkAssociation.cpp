@@ -71,3 +71,46 @@ double LandmarkAssociation::getWeight(const MeanParticle & carPosition, const Pa
 
    return prob;
 }
+
+
+bool LandmarkAssociation::getLandmarkIds(LandmarkIds & landmakIds) const
+{
+   landmakIds.clear();
+
+   for (const AssociationPair & association : m_assocations)
+   {
+      const Landmark * landmark = association.second;
+
+      if (landmark != nullptr)
+      {
+         if (!landmakIds.push_back(landmark->getId()))
+         {
+            return false;
+         }
+      }
+   }
+
+   return true;
+}
+
+bool LandmarkAssociation::getObservationWorldCoordinates(ObservationWorldCoordinates & observationWorldCoordinates) const
+{
+   observationWorldCoordinates.clear();
+
+   for (const AssociationPair & association : m_assocations)
+   {
+      const Observation & observation = association.first;
+      const Landmark * landmark = association.second;
+
+      if (landmark != nullptr)
+      {
+         const Coordinate2D coordinates = observation();
+         if (!observationWorldCoordinates.push_back(coordinates))
+         {
+            return false;
+         }
+      }
+   }
+
+   return true;
+}
