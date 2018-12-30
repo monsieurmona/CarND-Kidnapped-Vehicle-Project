@@ -36,25 +36,29 @@ public:
 
       // receive noisy observation data from the simulator
       // sense_observations in JSON format [{obs_x,obs_y},{obs_x,obs_y},...{obs_x,obs_y}]
-      std::vector<double> x_sense;
+      std::vector<float> x_sense;
       x_sense.reserve(ObservationDefines::m_nMaxObservations);
       std::stringstream iss_x(sense_observations_x);
 
-      std::copy(std::istream_iterator<double>(iss_x),
-                std::istream_iterator<double>(),
+      std::copy(std::istream_iterator<float>(iss_x),
+                std::istream_iterator<float>(),
                 std::back_inserter(x_sense));
 
-      std::vector<double> y_sense;
+      std::vector<float> y_sense;
       y_sense.reserve(ObservationDefines::m_nMaxObservations);
       std::stringstream iss_y(sense_observations_y);
 
-      std::copy(std::istream_iterator<double>(iss_y),
-                std::istream_iterator<double>(),
+      std::copy(std::istream_iterator<float>(iss_y),
+                std::istream_iterator<float>(),
                 std::back_inserter(y_sense));
 
       for(size_t i = 0; i < x_sense.size() && i < y_sense.size(); i++)
       {
-         Landmark obs(-1, x_sense[i], y_sense[i]);
+         Landmark obs(
+                  -1,
+                  static_cast<double>(x_sense[i]),
+                  static_cast<double>(y_sense[i]));
+
          if (!LandmarksType::push_back(obs))
          {
             std::cerr << "Add noisy observations failed" << std::endl;

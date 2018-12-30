@@ -96,8 +96,10 @@ public:
       const double cos_theta = cos(theta);
       const double sin_theta = sin(theta);
 
-      m_x = m_x * cos_theta - m_y * sin_theta + x_p;
-      m_y = m_x * sin_theta + m_y * cos_theta + y_p;
+      const double newX = m_x * cos_theta - m_y * sin_theta + x_p;
+      const double newY = m_x * sin_theta + m_y * cos_theta + y_p;
+      m_x = newX;
+      m_y = newY;
    }
 
    /**

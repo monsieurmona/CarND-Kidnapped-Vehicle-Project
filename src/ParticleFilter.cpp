@@ -52,7 +52,9 @@ void ParticleFilter::updateWeights(const double sensorRange, const StandardDevia
 {
    for (Particle & predictedCarPosition : m_particles)
    {
-      m_landmarkAssociation.associate(sensorRange, predictedCarPosition, observations, landmarkMap);
+      Observations observationInWorldCoordinates = observations;
+      observationInWorldCoordinates.transform(predictedCarPosition);
+      m_landmarkAssociation.associate(sensorRange, predictedCarPosition, observationInWorldCoordinates, landmarkMap);
       predictedCarPosition.m_weight = m_landmarkAssociation.getWeight(landmarkStd);
    }
 }
@@ -124,7 +126,9 @@ void ParticleFilter::getAssociationsString(
       std::string & xCoordinatesStr,
       std::string & yCoordinatesStr)
 {
-   m_landmarkAssociation.associate(sensorRange, particle, observations, landmarkMap);
+   Observations observationInWorldCoordinates = observations;
+   observationInWorldCoordinates.transform(particle);
+   m_landmarkAssociation.associate(sensorRange, particle, observationInWorldCoordinates, landmarkMap);
    LandmarkAssociation::LandmarkIds landmarkIds;
    LandmarkAssociation::ObservationWorldCoordinates observationWorldCoordinates;
    m_landmarkAssociation.getLandmarkIds(landmarkIds);

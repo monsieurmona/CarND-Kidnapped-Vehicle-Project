@@ -77,13 +77,13 @@ int main()
             if (event == "telemetry") {
                // j[1] is the data JSON object
 
-               // Sense noisy position data from the simulator
-               double sense_x = std::stod(j[1]["sense_x"].get<std::string>());
-               double sense_y = std::stod(j[1]["sense_y"].get<std::string>());
-               double sense_theta = std::stod(j[1]["sense_theta"].get<std::string>());
-               MeanParticle meanParticle(Particle(sense_x, sense_y, sense_theta), sigma_pos);
 
                if (!pf->isInitialized()) {
+                  // Sense noisy position data from the simulator
+                  double sense_x = std::stod(j[1]["sense_x"].get<std::string>());
+                  double sense_y = std::stod(j[1]["sense_y"].get<std::string>());
+                  double sense_theta = std::stod(j[1]["sense_theta"].get<std::string>());
+                  MeanParticle meanParticle(Particle(sense_x, sense_y, sense_theta), sigma_pos);
                   pf->init(meanParticle);
                }
                else {
@@ -107,7 +107,7 @@ int main()
                // Update the weights and resample
                const LandmarkMap & landmarkMap = *landmarkMapPtr.get();
                pf->updateWeights(sensor_range, sigma_landmark, noisy_observations, landmarkMap);
-               pf->print();
+               // pf->print();
                pf->resample();
 
                size_t num_particles = pf->getAmount();
@@ -127,6 +127,7 @@ int main()
                std::string associatedLandmarkIds;
                std::string associatedObeservationXCoordinates;
                std::string associatedObeservationYCoordinates;
+               /*
                pf->getAssociationsString(
                         sensor_range,
                         *best_particle.m_ptr,
@@ -136,6 +137,7 @@ int main()
                         associatedObeservationXCoordinates,
                         associatedObeservationYCoordinates
                         );
+               */
                msgJson["best_particle_associations"] = associatedLandmarkIds;
                msgJson["best_particle_sense_x"] = associatedObeservationXCoordinates;
                msgJson["best_particle_sense_y"] = associatedObeservationYCoordinates;

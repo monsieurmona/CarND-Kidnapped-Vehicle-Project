@@ -53,8 +53,6 @@ public:
     */
    inline bool push_back(const ElementType & element)
    {
-      assert((m_array.begin() + m_length) <= m_last);
-
       bool inserted = false;
       if (m_last != m_array.end())
       {
@@ -165,7 +163,6 @@ public:
     */
    inline ElementType & operator[](size_t idx)
    {
-      assert(idx < m_length);
       return m_array[idx];
    }
 

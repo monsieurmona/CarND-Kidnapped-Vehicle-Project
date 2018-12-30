@@ -8,11 +8,9 @@
 #include "MeanParticle.hpp"
 #include "StandardDeviationLandmark.hpp"
 
-void LandmarkAssociation::associate(const double sensorRange, const Particle & predictedCarPosition, Observations carObservations, const LandmarkMap & landmarkMap)
+void LandmarkAssociation::associate(const double sensorRange, const Particle & predictedCarPosition, const Observations & carObservations, const LandmarkMap & landmarkMap)
 {
    const double maxDistance = std::numeric_limits<double>::max();
-
-   carObservations.transform(predictedCarPosition);
    m_assocations.clear();
 
    // get landmarks in view for association
@@ -56,6 +54,7 @@ void LandmarkAssociation::associate(const double sensorRange, const Particle & p
 
 double LandmarkAssociation::getWeight(const StandardDeviationLandmark & stdLandmark)
 {
+   int associationCount = 0;
    double prob = 1.0;
 
    for (const AssociationPair & association : m_assocations)
@@ -69,16 +68,22 @@ double LandmarkAssociation::getWeight(const StandardDeviationLandmark & stdLandm
          const double observationProb =
                stdLandmark.gaussian(observation.getCoord2d(), landmark->getCoord2d());
 
-         if (observationProb > 0.0)
+         associationCount++;
+         const double eps = std::numeric_limits<double>::epsilon();
+         if (observationProb > eps)
          {
             prob *= observationProb;
          }
          else
          {
-            prob = 0.0;
-            break;
+            prob *= eps;
          }
       }
+   }
+
+   if (associationCount == 0)
+   {
+      return 0.0;
    }
 
    return prob;
