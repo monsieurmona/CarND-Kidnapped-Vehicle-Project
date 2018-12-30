@@ -29,10 +29,10 @@ public:
     * @brief associates car observations to map landmarks
     * @param sensorRange
     * @param predictedCarPosition a particle that represents a possible car position
-    * @param carObervations a copy of all car observations
+    * @param carObservations a copy of all car observations
     * @param landmarkMap all map landmarks
     */
-   void associate(const double sensorRange, const Particle & predictedCarPosition, Observations carObervations, const LandmarkMap & landmarkMap);
+   void associate(const double sensorRange, const Particle & predictedCarPosition, Observations carObservations, const LandmarkMap & landmarkMap);
 
    /**
     * @brief calculate the new weight for a particle

@@ -44,6 +44,30 @@ public:
       return dist(m_x, m_y, landmark.m_x, landmark.m_y);
    }
 
+   /**
+    * @brief checks if a particle is in a landmark square
+    * @param particle
+    * @param sideLength
+    * @return
+    */
+   inline bool inTile(const Particle & particle, const double sideLength) const
+   {
+      return fabs(m_x - particle.m_x) <= sideLength &&
+            fabs(m_y - particle.m_y) <= sideLength;
+   }
+
+   /**
+    * @brief checks if a landmark is in a landmark square
+    * @param particle
+    * @param sideLength
+    * @return
+    */
+   inline bool inTile(const Landmark & landmark, const double sideLength) const
+   {
+      return fabs(m_x - landmark.m_x) <= sideLength &&
+            fabs(m_y - landmark.m_y) <= sideLength;
+   }
+
    inline Coordinate2D operator-(const Landmark & landmark) const
    {
       Coordinate2D coordinate(m_x, m_y);
@@ -72,8 +96,8 @@ public:
       const double cos_theta = cos(theta);
       const double sin_theta = sin(theta);
 
-      m_x = x_p + cos_theta * m_x - sin_theta * m_y;
-      m_y = y_p + sin_theta * m_x + cos_theta * m_y;
+      m_x = m_x * cos_theta - m_y * sin_theta + x_p;
+      m_y = m_x * sin_theta + m_y * cos_theta + y_p;
    }
 
    /**

@@ -30,7 +30,7 @@ public:
     * @warning this function uses dynamic memory - and needs to be refactored.
     * @note this part is was copied from code provided by udacity
     */
-   bool receive(const std::string & sense_observations_x, const std::string sense_observations_y)
+   bool receive(const std::string & sense_observations_x, const std::string & sense_observations_y)
    {
       bool fullyReceived = true;
 

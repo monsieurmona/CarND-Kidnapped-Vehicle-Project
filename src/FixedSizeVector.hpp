@@ -8,6 +8,7 @@
 // system includes
 #include <array>
 #include <algorithm>
+#include <assert.h>
 
 /**
  * This is basically an array that can not be resized. The size has must be know at compile time.
@@ -52,6 +53,8 @@ public:
     */
    inline bool push_back(const ElementType & element)
    {
+      assert((m_array.begin() + m_length) <= m_last);
+
       bool inserted = false;
       if (m_last != m_array.end())
       {
@@ -160,7 +163,11 @@ public:
     * @param idx index to the element
     * @return element
     */
-   inline ElementType & operator[](size_t idx) { return m_array[idx]; }
+   inline ElementType & operator[](size_t idx)
+   {
+      assert(idx < m_length);
+      return m_array[idx];
+   }
 
 private:
    Type m_array;

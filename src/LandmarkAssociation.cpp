@@ -8,32 +8,35 @@
 #include "MeanParticle.hpp"
 #include "StandardDeviationLandmark.hpp"
 
-void LandmarkAssociation::associate(const double sensorRange, const Particle & predictedCarPosition, Observations carObervations, const LandmarkMap & landmarkMap)
+void LandmarkAssociation::associate(const double sensorRange, const Particle & predictedCarPosition, Observations carObservations, const LandmarkMap & landmarkMap)
 {
    const double maxDistance = std::numeric_limits<double>::max();
 
-   carObervations.transform(predictedCarPosition);
+   carObservations.transform(predictedCarPosition);
    m_assocations.clear();
 
    // get landmarks in view for association
    LandmarkMap::LandmarksInView landmarksInView;
-   landmarkMap.getLandmarksInView(predictedCarPosition, sensorRange, landmarksInView);
+   landmarkMap.getLandmarksInView(predictedCarPosition, sensorRange * 1.1, landmarksInView);
 
    // for all observations find the closest landmark
-   for (const Observation & observation : carObervations)
+   for (const Observation & observation : carObservations)
    {
       double minDistance = maxDistance;
       const Landmark * closestLandmark = nullptr;
 
       // find the closest landmark for the observation
-      for (const Landmark & landmarkInView : landmarksInView)
+      for (const Landmark * landmarkInView : landmarksInView)
       {
-         const double associationDistance = observation.euclideanDistance(landmarkInView);
-
-         if (associationDistance < minDistance)
+         if (landmarkInView)
          {
-            closestLandmark = &landmarkInView;
-            minDistance = associationDistance;
+            const double associationDistance = observation.euclideanDistance(*landmarkInView);
+
+            if (associationDistance < minDistance)
+            {
+               closestLandmark = landmarkInView;
+               minDistance = associationDistance;
+            }
          }
       }
 
@@ -62,7 +65,19 @@ double LandmarkAssociation::getWeight(const StandardDeviationLandmark & stdLandm
 
       if (landmark != nullptr)
       {
-         prob *= stdLandmark.gaussian(landmark->getCoord2d(), observation.getCoord2d());
+         //prob *= stdLandmark.gaussian(landmark->getCoord2d(), observation.getCoord2d());
+         const double observationProb =
+               stdLandmark.gaussian(observation.getCoord2d(), landmark->getCoord2d());
+
+         if (observationProb > 0.0)
+         {
+            prob *= observationProb;
+         }
+         else
+         {
+            prob = 0.0;
+            break;
+         }
       }
    }
 

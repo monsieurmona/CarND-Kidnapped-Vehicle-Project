@@ -90,6 +90,8 @@ int main()
                   // Predict the vehicle's next state from previous (noiseless control) data.
                   double previous_velocity = std::stod(j[1]["previous_velocity"].get<std::string>());
                   double previous_yawrate = std::stod(j[1]["previous_yawrate"].get<std::string>());
+
+                  std::cout << "velocity:" << previous_velocity << " yawrate:" << previous_yawrate << std::endl;
                   MotionModel motionModel(delta_t, previous_velocity, previous_yawrate, sigma_pos);
                   pf->predict(motionModel);
                }
@@ -103,7 +105,9 @@ int main()
                noisy_observations.receive(sense_observations_x, sense_observations_y);
 
                // Update the weights and resample
-               pf->updateWeights(sensor_range, sigma_landmark, noisy_observations, *landmarkMapPtr);
+               const LandmarkMap & landmarkMap = *landmarkMapPtr.get();
+               pf->updateWeights(sensor_range, sigma_landmark, noisy_observations, landmarkMap);
+               pf->print();
                pf->resample();
 
                size_t num_particles = pf->getAmount();

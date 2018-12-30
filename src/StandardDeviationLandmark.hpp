@@ -20,16 +20,20 @@ public:
 
    inline double gaussian(const Coordinate2D & mu, const Coordinate2D & observation) const
    {
-      const double gauss_norm = (1.0/(2.0 * M_PI * m_stdX * m_stdY));
-      const double exponent= pow((observation.m_x - mu.m_x),2) / (2 * pow(m_stdX,2)) + pow((observation.m_y - mu.m_y),2)/pow(2 * m_stdY,2);
+      const double exponent=
+            (pow((observation.m_x - mu.m_x),2) / m_stdX2) +
+            (pow((observation.m_y - mu.m_y),2) / m_stdY2);
 
-      const double weight = gauss_norm * exp(- exponent);
+      const double weight = m_gauss_norm * exp(- exponent);
       return weight;
    }
 
 private:
    double m_stdX;
    double m_stdY;
+   double m_stdX2;
+   double m_stdY2;
+   double m_gauss_norm;
 };
 
 #endif // STANDARDDEVIATIONLANDMARK_HPP

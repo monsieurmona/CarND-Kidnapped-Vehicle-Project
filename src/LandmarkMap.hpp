@@ -9,10 +9,10 @@
 // local include
 #include "Landmarks.hpp"
 
-class LandmarkMap : public Landmarks<10000>
+class LandmarkMap : public Landmarks<1000>
 {
 public:
-   using LandmarksInView = Landmarks<200>;
+   using LandmarksInView = FixedSizeVector<const Landmark*, 200>;
    using UniquePtr = std::unique_ptr<LandmarkMap>;
 
    /* Reads map data from a file.
@@ -56,11 +56,9 @@ public:
       // we run over all landmarks here
       for (const Landmark & landmark : *this)
       {
-         const double distance = landmark.euclideanDistance(position);
-
-         if (distance <= range_m)
+         if (landmark.inTile(position, range_m))
          {
-            if (!landmarksInView.push_back(landmark))
+            if (!landmarksInView.push_back(&landmark))
             {
                std::cerr << "LandmarkMap::getLandmarksInView unable to insert more landmarks to view" << std::endl;
                break;

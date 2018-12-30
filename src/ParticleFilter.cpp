@@ -77,20 +77,25 @@ const ParticleFilter::BestParticle ParticleFilter::getBestParticle() const
 
 void ParticleFilter::resample()
 {
+   if (m_particles.length() == 0)
+   {
+      return;
+   }
+
    ParticleStorage newParticles;
    using ParticleIndex = size_t;
 
    const double maxWeight = getMaxWeight();
+   const size_t N = m_particles.length();
 
    RandomGenerator<ParticleIndex, std::uniform_int_distribution<ParticleIndex>>
-         randomIndexGenerator(0, m_particles.length());
+         randomIndexGenerator(0, N - 1);
 
    RandomGenerator<double, std::uniform_real_distribution<double>>
          randomBetaGenerator(0.0, 2.0 * maxWeight);
 
    ParticleIndex selectIdx = randomIndexGenerator();
    double beta = 0.0;
-   const size_t N = m_particles.length();
 
    for (ParticleIndex counter = 0; counter < N; counter++)
    {
@@ -102,8 +107,6 @@ void ParticleFilter::resample()
          selectIdx = (selectIdx + 1) % N;
       }
 
-      // if we don't have the particle already,
-      // we insert the new particle into the new set
       const Particle & newParticle = m_particles[selectIdx];
       newParticles.push_back(newParticle);
    }

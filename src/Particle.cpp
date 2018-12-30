@@ -13,7 +13,7 @@ Particle::Particle()
    // as we don't want to waste time
 }
 
-Particle::Particle(double x, double y, double heading)
+Particle::Particle(const double x, const double y, const double heading)
    : m_x(x)
    , m_y(y)
    , m_heading(heading)
