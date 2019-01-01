@@ -1,3 +1,7 @@
+/*
+ *  Author: Mario Lüder
+ */
+
 #ifndef LANDMARKMAP_HPP
 #define LANDMARKMAP_HPP
 
@@ -9,6 +13,9 @@
 // local include
 #include "Landmarks.hpp"
 
+/**
+ * @brief Contains all landmarks of a map
+ */
 class LandmarkMap : public Landmarks<1000>
 {
 public:
@@ -19,6 +26,7 @@ public:
     * @param filename Name of file containing map data.
     * @output True if opening and reading file was successful
     * @note this part is was copied from code provided by udacity
+    * @warning this part uses dynamic allocated memory
     */
    inline bool read_map_data(const std::string & filename)
    {
@@ -48,6 +56,13 @@ public:
       return true;
    }
 
+   /**
+    * @brief gets all landmarks that might be visible from a given position
+    * @details this uses a rectangular tile (and not a circle) so find possible matches
+    * @param position
+    * @param range_m
+    * @param landmarksInView land marks that might be visible
+    */
    inline void getLandmarksInView(const Particle & position, const double range_m, LandmarksInView & landmarksInView) const
    {
       landmarksInView.clear();

@@ -54,6 +54,7 @@ void LandmarkAssociation::associate(const double sensorRange, const Particle & p
 
 double LandmarkAssociation::getWeight(const StandardDeviationLandmark & stdLandmark)
 {
+   const double eps = std::numeric_limits<double>::epsilon();
    int associationCount = 0;
    double prob = 1.0;
 
@@ -69,21 +70,21 @@ double LandmarkAssociation::getWeight(const StandardDeviationLandmark & stdLandm
                stdLandmark.gaussian(observation.getCoord2d(), landmark->getCoord2d());
 
          associationCount++;
-         const double eps = std::numeric_limits<double>::epsilon();
          if (observationProb > eps)
          {
             prob *= observationProb;
          }
          else
          {
-            prob *= eps;
+            prob = eps;
+            break;
          }
       }
    }
 
-   if (associationCount == 0)
+   if (associationCount == 0 || prob < eps)
    {
-      return 0.0;
+      return eps;
    }
 
    return prob;

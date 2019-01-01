@@ -31,7 +31,12 @@ public:
     */
    inline double euclideanDistance(const Particle & particle) const
    {
-      return dist(m_x, m_y, particle.m_x, particle.m_y);
+      const double x1 = getCoord2d().m_x;
+      const double y1 = getCoord2d().m_y;
+      const double x2 = particle.getCoordinates2D().m_x;
+      const double y2 = particle.getCoordinates2D().m_y;
+
+      return dist(x1,y1, x2, y2);
    }
 
    /**
@@ -41,7 +46,12 @@ public:
     */
    inline double euclideanDistance(const Landmark & landmark) const
    {
-      return dist(m_x, m_y, landmark.m_x, landmark.m_y);
+      const double x1 = getCoord2d().m_x;
+      const double y1 = getCoord2d().m_y;
+      const double x2 = landmark.getCoord2d().m_x;
+      const double y2 = landmark.getCoord2d().m_y;
+
+      return dist(x1,y1, x2, y2);
    }
 
    /**
@@ -50,10 +60,12 @@ public:
     * @param sideLength
     * @return
     */
-   inline bool inTile(const Particle & particle, const double sideLength) const
+   inline bool inTile(const Particle & particle, const double maxSideLength) const
    {
-      return fabs(m_x - particle.m_x) <= sideLength &&
-            fabs(m_y - particle.m_y) <= sideLength;
+      const Coordinate2D sideLengths = getCoord2d() - particle.getCoordinates2D();
+
+      return fabs(sideLengths.m_x) <= maxSideLength &&
+             fabs(sideLengths.m_y) <= maxSideLength;
    }
 
    /**
@@ -62,44 +74,41 @@ public:
     * @param sideLength
     * @return
     */
-   inline bool inTile(const Landmark & landmark, const double sideLength) const
+   inline bool inTile(const Landmark & landmark, const double maxSideLength) const
    {
-      return fabs(m_x - landmark.m_x) <= sideLength &&
-            fabs(m_y - landmark.m_y) <= sideLength;
-   }
+      const Coordinate2D sideLengths = getCoord2d() - landmark.getCoord2d();
 
-   inline Coordinate2D operator-(const Landmark & landmark) const
-   {
-      Coordinate2D coordinate(m_x, m_y);
-      coordinate.m_x -= landmark.m_x;
-      coordinate.m_y -= landmark.m_y;
-      return coordinate;
-   }
-
-   inline Coordinate2D operator-(const Particle & particle) const
-   {
-      Coordinate2D coordinate(m_x, m_y);
-      coordinate.m_x -= particle.m_x;
-      coordinate.m_y -= particle.m_y;
-      return coordinate;
+      return fabs(sideLengths.m_x) <= maxSideLength &&
+             fabs(sideLengths.m_y) <= maxSideLength;
    }
 
    /**
-    * @brief transforms observations in car coordinate system to map coordinates
+    * @brief subtract two landmark coordinates
+    * @param landmark
+    * @return resulting coordinate
+    */
+   inline Coordinate2D operator-(const Landmark & landmark) const
+   {
+      return getCoord2d() - landmark.getCoord2d();
+   }
+
+   /**
+    * @brief subtract particle coordinate from a landmark coordinate
+    * @param particle
+    * @return resulting coordinate
+    */
+   inline Coordinate2D operator-(const Particle & particle) const
+   {
+      return getCoord2d() - particle.getCoordinates2D();
+   }
+
+   /**
+    * @brief transforms observations, meassured in car coordinate system, to map coordinates
     * @param predictedCarPosition
     */
    inline void transform(const Particle & predictedCarPosition)
    {
-      const double x_p = predictedCarPosition.m_x;
-      const double y_p = predictedCarPosition.m_y;
-      const double theta = predictedCarPosition.m_heading;
-      const double cos_theta = cos(theta);
-      const double sin_theta = sin(theta);
-
-      const double newX = m_x * cos_theta - m_y * sin_theta + x_p;
-      const double newY = m_x * sin_theta + m_y * cos_theta + y_p;
-      m_x = newX;
-      m_y = newY;
+      m_position.transform(predictedCarPosition.getCoordinates2D(), predictedCarPosition.m_heading);
    }
 
    /**
@@ -112,12 +121,11 @@ public:
     * @brief provides the coordinate of the landmark
     * @return landmark coordinates
     */
-   inline Coordinate2D getCoord2d() const { return Coordinate2D(m_x, m_y); }
+   inline const Coordinate2D & getCoord2d() const { return m_position; }
 
 private:
-   int m_id;			// Id of matching landmark in the map.
-   double m_x;			// Local (vehicle coordinates) x position of landmark observation [m]
-   double m_y;			// Local (vehicle coordinates) y position of landmark observation [m]
+   int m_id;   // Id of matching landmark in the map.
+   Coordinate2D m_position;
 };
 
 #endif // LANDMARK_HPP

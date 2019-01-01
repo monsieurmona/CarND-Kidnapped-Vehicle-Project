@@ -14,6 +14,9 @@ class LandmarkMap;
 class MeanParticle;
 class StandardDeviationLandmark;
 
+/**
+ * @brief Associates observations with landmarks and stores the result
+ */
 class LandmarkAssociation
 {
 public:
@@ -51,7 +54,7 @@ public:
    bool getLandmarkIds(LandmarkIds & landmakIds) const;
 
    /**
-    * @brief provides provides the world coordinates of observations that were associated to landmarks
+    * @brief provides world coordinates of observations that were associated to landmarks
     * @param observationWorldCoordinates world coordinates of observations
     * @return true : successful
     */
